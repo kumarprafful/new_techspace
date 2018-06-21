@@ -19,8 +19,9 @@ class BlogListView(ListView):
 # 	template_name = 'blog/blog_detail.html'
 # 	context_object_name = 'blog_detail'
 
-def blogDetailView(request, pk):
-	blog = get_object_or_404(BlogPost, pk=pk)
+def blogDetailView(request, slug):
+	# print("sulg = ", slug)
+	blog = get_object_or_404(BlogPost, slug=slug)
 	comments = blog.comments.filter(active=True)
 	if request.method == 'POST':
 		comment_form = CommentForm(data=request.POST)
@@ -29,7 +30,7 @@ def blogDetailView(request, pk):
 			new_comment.comment_author = request.user.username
 			new_comment.post = blog
 			new_comment.save()
-			return redirect('blog:detail', pk=pk)
+			return redirect('blog:detail', slug=slug)
 	else:
 		comment_form = CommentForm()
 	return render(request, 'blog/blog_detail.html', {'blog_detail': blog, 'form': comment_form, 'comments': comments})

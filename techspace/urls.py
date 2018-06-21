@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^', include('home.urls')),
     url(r'^accounts/', include('log.urls')),
     url(r'^blogs/', include('blog.urls')),
-    url(r'^event/', include('event.urls')),
+    url(r'^events/', include('event.urls')),
 ]
 
 

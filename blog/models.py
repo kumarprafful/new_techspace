@@ -1,4 +1,6 @@
 from django.db import models
+from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_lazy as _
 from datetime import datetime
 from django.core.urlresolvers import reverse
 
@@ -8,9 +10,11 @@ from django.core.urlresolvers import reverse
 class BlogPost(models.Model):
 	author = models.CharField(max_length=255)
 	date = models.DateTimeField(default=datetime.now)
-	title = models.CharField(max_length=1024)
+	title = models.CharField(max_length=1024, unique=True)
 	image = models.ImageField(upload_to='blog', default='blog/thumbnail-default.jpg')
 	content = models.TextField()
+	slug = models.SlugField(_('slug'), db_index=True, max_length=2024, unique=True)
+
 
 	codeschool = 'codeschool'
 	cogitans = 'cogitans'
@@ -36,8 +40,13 @@ class BlogPost(models.Model):
 	club = models.CharField(max_length=200, choices=club_choices, blank=True)
 
 	def get_absolute_url(self):
-		return reverse('blog:detail', kwargs={'pk': self.pk})
+		return reverse('blog:detail', args=[self.id, self.slug])
 
+
+	def save(self, *args,**kwargs):
+		if not self.id:
+			self.slug = slugify(self.title)
+		super(BlogPost, self).save(*args, **kwargs)
 
 
 	def __str__(self):
